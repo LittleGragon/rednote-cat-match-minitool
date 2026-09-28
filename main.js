@@ -208,7 +208,13 @@
 
   function layout_board() {
     var board = $('board');
-    var w = board.clientWidth;
+    // 测量外层容器（board-wrap 左右 padding 各 12px），避免依赖 board 自身被写死的内联宽度
+    var w = board.parentNode.clientWidth - 24;
+    if (w <= 0) {
+      // 页面尚未显示（display:none 时宽度为 0），等激活后重试，防止格子被锁成 0px
+      window.setTimeout(layout_board, 60);
+      return;
+    }
     var tile = Math.floor(w / BOARD_COLS);
     board.style.width = (tile * BOARD_COLS) + 'px';
     var tiles = board.children;
