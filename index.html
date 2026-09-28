@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="shell-type" content="mobile_tab"/>
+  <title>橘猫三消</title>
+  <link rel="stylesheet" href="./styles.css"/>
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ===== 首页 ===== -->
+    <section class="page home-page active" id="page-home">
+      <header class="home-topbar">
+        <div class="home-topbar__left">
+          <span class="paw-badge">🐾</span>
+          <span class="home-topbar__level" id="home-level-label">第 1 关</span>
+          <span class="home-topbar__stamina">体力 <b id="home-stamina">5/5</b></span>
+        </div>
+        <button class="icon-btn" type="button" data-action="toggle-sound" aria-label="声音开关">
+          <span class="icon-btn__glyph" id="sound-icon">🔊</span>
+        </button>
+      </header>
+
+      <div class="hero">
+        <div class="hero__glow"></div>
+        <div class="hero__bubble opacity-hide" id="heart-bubble">喵呜~❤</div>
+        <div class="mascot" id="cat-mascot" data-action="pet-cat" role="button" aria-label="摸摸橘猫">
+          <svg viewBox="0 0 200 200" class="mascot__svg" aria-hidden="true">
+            <polygon points="52,74 66,20 96,52" fill="#E87B2F"/>
+            <polygon points="148,74 134,20 104,52" fill="#E87B2F"/>
+            <polygon points="60,68 70,34 88,55" fill="#FFCAD6"/>
+            <polygon points="140,68 130,34 112,55" fill="#FFCAD6"/>
+            <circle cx="100" cy="112" r="72" fill="#E87B2F"/>
+            <path d="M78 52 l6 16 M100 48 l0 18 M122 52 l-6 16" stroke="#994600" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M62 104 q12 -16 24 0" stroke="#3D2E1F" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <path d="M114 104 q12 -16 24 0" stroke="#3D2E1F" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <circle cx="60" cy="124" r="11" fill="#FF8CA3" opacity="0.75"/>
+            <circle cx="140" cy="124" r="11" fill="#FF8CA3" opacity="0.75"/>
+            <path d="M100 118 l-5 7 h10 z" fill="#994600"/>
+            <path d="M88 130 q6 8 12 2 q6 6 12 -2" stroke="#3D2E1F" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M30 112 h22 M32 126 h20" stroke="#994600" stroke-width="4" stroke-linecap="round"/>
+            <path d="M170 112 h-22 M168 126 h-20" stroke="#994600" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="146" cy="146" r="3" fill="#994600"/>
+            <circle cx="154" cy="142" r="3" fill="#994600"/>
+            <circle cx="152" cy="152" r="3" fill="#994600"/>
+          </svg>
+        </div>
+      </div>
+
+      <h1 class="brand">橘猫三消</h1>
+      <p class="brand__sub">喵喵消除，快乐加倍</p>
+
+      <div class="score-card">
+        <span class="score-card__icon">🏆</span>
+        <span class="score-card__label">最高分</span>
+        <span class="score-card__value" id="home-high-score">0</span>
+      </div>
+
+      <button class="btn btn--primary" type="button" data-action="start-game">
+        <span class="btn__icon">▶</span> 开始游戏
+      </button>
+      <button class="btn btn--ghost" type="button" data-action="open-levels">
+        选择关卡 <span class="btn__arrow">→</span>
+      </button>
+
+      <!-- 关卡选择弹层 -->
+      <div class="sheet" id="level-sheet" hidden>
+        <div class="sheet__mask" data-action="close-levels"></div>
+        <div class="sheet__panel">
+          <div class="sheet__title">选择关卡</div>
+          <div class="level-grid" id="level-grid"></div>
+          <button class="btn btn--ghost sheet__close" type="button" data-action="close-levels">关闭</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 游戏页 ===== -->
+    <section class="page game-page" id="page-game">
+      <header class="game-topbar">
+        <button class="icon-btn" type="button" data-action="pause-game" aria-label="暂停">⏸</button>
+        <div class="game-topbar__info">
+          <div class="game-topbar__level" id="game-level-label">第 1 关</div>
+          <div class="game-topbar__goal">目标：<span id="game-goal-text">消除橘猫</span> <b id="game-goal-progress">0/10</b></div>
+        </div>
+        <div class="steps-pill"><span class="steps-pill__icon">⏱</span> 剩余 <b id="game-steps">15</b> 步</div>
+      </header>
+
+      <div class="score-strip">
+        <span class="score-strip__label">当前得分</span>
+        <span class="score-strip__value" id="game-score">0</span>
+      </div>
+      <div class="goal-progress"><div class="goal-progress__bar" id="goal-bar"></div></div>
+
+      <div class="board-wrap">
+        <div class="board" id="board"></div>
+        <div class="combo-banner opacity-hide" id="combo-banner">Nice! 3 Combo! 喵~ 🐾</div>
+      </div>
+
+      <div class="prop-bar" id="prop-bar">
+        <button class="prop" type="button" data-action="use-prop" data-prop="hammer">
+          <span class="prop__icon">🔨</span>
+          <span class="prop__count" id="prop-hammer">2</span>
+          <span class="prop__name">小锤</span>
+        </button>
+        <button class="prop" type="button" data-action="use-prop" data-prop="swap">
+          <span class="prop__icon">🔄</span>
+          <span class="prop__count" id="prop-swap">5</span>
+          <span class="prop__name">换位</span>
+        </button>
+        <button class="prop" type="button" data-action="use-prop" data-prop="mint">
+          <span class="prop__icon">🍃</span>
+          <span class="prop__count" id="prop-mint">1</span>
+          <span class="prop__name">薄荷</span>
+        </button>
+      </div>
+      <p class="prop-hint">交换相邻橘猫，三个连成一线即可消除</p>
+    </section>
+
+    <!-- ===== 结算弹层（失败 / 通关共用容器，按设计稿 fail 屏实现） ===== -->
+    <div class="result-mask" id="result-mask" hidden>
+      <div class="result-card">
+        <div class="result-card__face" id="result-face">😿</div>
+        <h2 class="result-card__title" id="result-title">步数用完啦~</h2>
+        <p class="result-card__sub" id="result-sub">差一点点就通关了，橘猫给你揉揉爪~</p>
+        <div class="result-stats">
+          <div class="result-stats__col">
+            <span class="result-stats__label">🪙 本次得分</span>
+            <span class="result-stats__value" id="result-score">0</span>
+          </div>
+          <div class="result-stats__col result-stats__col--gap">
+            <span class="result-stats__label" id="result-gap-label">差 320 分</span>
+            <div class="result-stats__bar"><div class="result-stats__bar-fill" id="result-bar"></div></div>
+            <span class="result-stats__target" id="result-target">目标 2,500</span>
+          </div>
+        </div>
+        <button class="btn btn--primary" type="button" data-action="retry-level" id="result-retry-btn">
+          <span class="btn__icon">＋</span> 再试一次 (+5步继续)
+        </button>
+        <button class="btn btn--ghost" type="button" data-action="back-home">返回首页</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="./data.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>
